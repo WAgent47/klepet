@@ -1,9 +1,19 @@
+var jeSlika = false;
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
-  if (jeSmesko) {
+  
+  var jeSlika = sporocilo.indexOf('<img') > -1;
+  
+  if (jeSmesko || jeSlika) {
+    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/\&lt;img/gi, '<img').replace(/png\' \/\&gt;/gi, 'png\' />').replace(/px"\&gt;/gi, 'px">');
+    return $('<div style="font-weight: bold"></div>').html(sporocilo);
+  }
+  /*else if(jeSlika){
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
-  } else {
+  }
+  */
+  else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
   }
 }
@@ -15,6 +25,8 @@ function divElementHtmlTekst(sporocilo) {
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
+  //doda sliko
+  sporocilo = dodajSliko(sporocilo);
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -128,6 +140,38 @@ function dodajSmeske(vhodnoBesedilo) {
     vhodnoBesedilo = vhodnoBesedilo.replace(smesko,
       "<img src='http://sandbox.lavbic.net/teaching/OIS/gradivo/" +
       preslikovalnaTabela[smesko] + "' />");
+  }
+  return vhodnoBesedilo;
+}
+
+function dodajSliko(vhodnoBesedilo){
+  var tabelaBesed = vhodnoBesedilo.split(' ');
+  for(var i=0; i<tabelaBesed.length; i++){
+    var beseda = tabelaBesed[i];
+    if(beseda.startsWith('http://') || beseda.startsWith('https://') 
+    && beseda.endsWith('.jpg') 
+    || beseda.endsWith('.png') 
+    || beseda.endsWith('.gif')){
+      beseda += ' <img src="' +beseda+ '" width="200" style="margin-left:20px"> ' 
+      tabelaBesed[i] = beseda;
+    }
+    vhodnoBesedilo='';
+  }
+  
+  for(var i=0; i<tabelaBesed.length; i++){
+    if(i == 0 && tabelaBesed.length != 1){
+      vhodnoBesedilo += tabelaBesed[i];
+      vhodnoBesedilo += ' ';
+    }
+    else if(i == tabelaBesed.length - 1 && tabelaBesed != 1){
+      vhodnoBesedilo += tabelaBesed[i];
+    }
+    else if(i == tabelaBesed.length - 1 && tabelaBesed == 1){
+      vhodnoBesedilo = tabelaBesed[i];
+    }
+    else{
+      vhodnoBesedilo = tabelaBesed[i];
+    }
   }
   return vhodnoBesedilo;
 }
