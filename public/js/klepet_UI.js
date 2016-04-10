@@ -100,9 +100,9 @@ $(document).ready(function() {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
     
-    
+    //TUKI DELAMO
     $('#seznam-uporabnikov div').click(function() {
-      $('#poslji-sporocilo').attr('value',('/zasebno ' +'"'+ $(this).text() + '"'));
+      $('#posljiSporocilo').attr(('value','/zasebno ' +'"'+ $(this).text() + '"'));
       $('#poslji-sporocilo').focus();
     });
   });
